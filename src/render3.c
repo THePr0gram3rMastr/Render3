@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define WINDOW_WIDTH 2560
-#define WINDOW_HEIGHT 1440
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 #define PIXEL_STRIDE 3
 
 #define BLACK 0x000000
@@ -13,13 +13,15 @@
 #define BLUE  0x0000ff
 #define GREY  0x333333
 
+#define CLEAR_COLOUR_BLACK         0x1
+#define CLEAR_COLOUR_WHITE		   0x2
+#define CLEAR_COLOUR_INTERPOLATED  0x3
 
-#define CLEAR_BLACK          0x1
-#define CLEAR_COLOR_EXAMPLE  0x2
+uint8_t* frame_buffer;
 
 //writes ppm image
 
-void write_ppm(uint8_t* frame_buffer, size_t buffer_size) {
+void write_ppm(size_t buffer_size) {
 	
 	FILE* file = fopen("render.ppm", "wb");
 	fprintf(file, "P6\n%i %i\n255\n", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -30,14 +32,22 @@ void write_ppm(uint8_t* frame_buffer, size_t buffer_size) {
 //clears buffer with a grid
 
 void draw_rect(int x_pos, int y_pos, int width, int height) {
-	for(int y = 0; y < WINDOW_HEIGHT; y++) {
-		for(int x = 0; x < WINDOW_WIDTH; x++) {
+	for(int y = y_pos; y < (y_pos + height); y++) {
+		for(int x = x_pos; x < (x_pos + width); x++) {
+			
+			int idx = ((WINDOW_WIDTH * y) + x) * PIXEL_STRIDE;
+			
+			frame_buffer[idx + 0] = 0xff;
+			frame_buffer[idx + 1] = 0x00;
+			frame_buffer[idx + 2] = 0x00;
 			
 		}
 	}
 }
 
-void draw_grid(uint8_t* frame_buffer) {
+//clears buffer with a grid
+
+void draw_grid() {
 	for(int y = 0; y < WINDOW_HEIGHT; y++) {
 		for(int x = 0; x < WINDOW_WIDTH; x++) {
 			
@@ -58,28 +68,41 @@ void draw_grid(uint8_t* frame_buffer) {
 
 //clears buffer with an interpolated colour example
 
-void clear_screen(uint8_t* frame_buffer) {
+void clear_screen(uint8_t clear_value) {
 	
 	for(int y = 0; y < WINDOW_HEIGHT; y++) {
 		for(int x = 0; x < WINDOW_WIDTH; x++) {
 			
 			int idx = ((WINDOW_WIDTH * y) + x) * PIXEL_STRIDE;
 			
-			float r, g, b;
+			if(clear_value == CLEAR_COLOUR_INTERPOLATED) {
+				
+				float r, g, b;
+				
+				r = (float)x / (float)WINDOW_WIDTH;
+				g = (float)y / (float)WINDOW_HEIGHT;
+				b = 0.5;
+				
+				float ir, ig, ib;
+				
+				ir = (float)255.99f * r;
+				ig = (float)255.99f * g;
+				ib = (float)255.99f * b;
+				
+				frame_buffer[idx + 0] = ir;
+				frame_buffer[idx + 1] = ig;
+				frame_buffer[idx + 2] = ib;
 			
-			r = (float)x / (float)WINDOW_WIDTH;
-			g = (float)y / (float)WINDOW_HEIGHT;
-			b = 0.5;
+			} else if(clear_value == CLEAR_COLOUR_BLACK)  {
+				frame_buffer[idx + 0] = 0x00;
+				frame_buffer[idx + 1] = 0x00;
+				frame_buffer[idx + 2] = 0x00;
 			
-			float ir, ig, ib;
-			
-			ir = (float)255.99f * r;
-			ig = (float)255.99f * g;
-			ib = (float)255.99f * b;
-			
-			frame_buffer[idx + 0] = ir;
-			frame_buffer[idx + 1] = ig;
-			frame_buffer[idx + 2] = ib;
+			} else if(clear_value == CLEAR_COLOUR_WHITE) {
+				frame_buffer[idx + 0] = 0xff;
+				frame_buffer[idx + 1] = 0xff;
+				frame_buffer[idx + 2] = 0xff;
+			}
 			
 		}
 	}
@@ -87,7 +110,7 @@ void clear_screen(uint8_t* frame_buffer) {
 
 //dumps raw buffer contents to a file
 
-void raw_buffer_dump(uint8_t* buffer, size_t buffer_size) {
+void raw_buffer_dump(size_t buffer_size) {
 	
 	FILE* file = fopen("raw_buffer_dump.txt", "wb");
 	
@@ -97,7 +120,7 @@ void raw_buffer_dump(uint8_t* buffer, size_t buffer_size) {
 			int idx = ((WINDOW_WIDTH * y) + x) * PIXEL_STRIDE;
 			
 			fprintf(file, "Pixel at coordinate %d, %d   R   G   B\n", x, y);
-			fprintf(file, "                             %d   %d  %d\n", buffer[idx + 0], buffer[idx + 1], buffer[idx + 2]);
+			fprintf(file, "                             %d   %d  %d\n", frame_buffer[idx + 0], frame_buffer[idx + 1], frame_buffer[idx + 2]);
 			fprintf(file, "\n");
 			
 		}
@@ -110,19 +133,20 @@ int main(int argc, char** argv) {
 	
 	size_t buffer_size_bytes = WINDOW_WIDTH * WINDOW_HEIGHT * PIXEL_STRIDE; //2560*1440*3 bytes
 	
-	uint8_t* pixel_buffer = (uint8_t*)malloc(buffer_size_bytes);
+	frame_buffer = (uint8_t*)malloc(buffer_size_bytes);
 	
-	if(pixel_buffer == NULL) {
+	if(frame_buffer == NULL) {
 		printf("There was an error when attempting to request %lu bytes of memory", buffer_size_bytes);
 	}
 	
-	clear_screen(pixel_buffer);
+	clear_screen(CLEAR_COLOUR_BLACK);
 	//draw_grid(pixel_buffer);
-	write_ppm(pixel_buffer, buffer_size_bytes);
+	draw_rect(400, 300, 100, 100);
+	write_ppm(buffer_size_bytes);
 	
-	raw_buffer_dump(pixel_buffer, buffer_size_bytes);
+	raw_buffer_dump(buffer_size_bytes);
 	
-	free(pixel_buffer);
+	free(frame_buffer);
 	
 	printf("%lu", sizeof(size_t));
 	
