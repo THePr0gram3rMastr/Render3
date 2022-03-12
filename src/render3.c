@@ -13,9 +13,9 @@
 #define BLUE  0x0000ff
 #define GREY  0x333333
 
-#define CLEAR_COLOUR_BLACK         0x1
-#define CLEAR_COLOUR_WHITE		   0x2
-#define CLEAR_COLOUR_INTERPOLATED  0x3
+#define CLEAR_COLOUR_BLACK			0x1
+#define CLEAR_COLOUR_WHITE			0x2
+#define CLEAR_COLOUR_INTERPOLATED	0x3
 
 uint8_t* frame_buffer;
 
@@ -29,7 +29,7 @@ void write_ppm(size_t buffer_size) {
 	fclose(file);
 }
 
-//clears buffer with a grid
+//draws a rectangle
 
 void draw_rect(int x_pos, int y_pos, int width, int height) {
 	for(int y = y_pos; y < (y_pos + height); y++) {
@@ -45,7 +45,7 @@ void draw_rect(int x_pos, int y_pos, int width, int height) {
 	}
 }
 
-//clears buffer with a grid
+//draws a grid
 
 void draw_grid() {
 	for(int y = 0; y < WINDOW_HEIGHT; y++) {
@@ -66,7 +66,7 @@ void draw_grid() {
 	}
 }
 
-//clears buffer with an interpolated colour example
+//clears buffer with selected colour mode
 
 void clear_screen(uint8_t clear_value) {
 	
@@ -103,7 +103,6 @@ void clear_screen(uint8_t clear_value) {
 				frame_buffer[idx + 1] = 0xff;
 				frame_buffer[idx + 2] = 0xff;
 			}
-			
 		}
 	}
 }
@@ -147,8 +146,6 @@ int main(int argc, char** argv) {
 	raw_buffer_dump(buffer_size_bytes);
 	
 	free(frame_buffer);
-	
-	printf("%lu", sizeof(size_t));
 	
 	return 0;
 }
