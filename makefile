@@ -1,8 +1,2 @@
 build:
-	gcc -o render3 render3.c
-
-run:
-	./render3
-
-clean:
-	rm render3
+	gcc -lSDL2 -o render3 -Wall -std=c99 src/*.c
