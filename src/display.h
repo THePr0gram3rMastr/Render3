@@ -1,3 +1,16 @@
+/*
+ * File:    display.h
+ *
+ * Author:  Cian Martin Bohan (@cianmarbo)
+ * Date:    April 2022
+ *
+ * Summary of file:
+ *
+ *		display.h defines constants and declarations for various
+ * 		functions required for manipulating and rendering the 
+ *		framebuffer.
+ */
+
 #ifndef DISPLAY_H 
 #define DISPLAY_H
 

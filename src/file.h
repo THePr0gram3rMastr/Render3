@@ -1,3 +1,15 @@
+/*
+ * File:    file.h
+ *
+ * Author:  Cian Martin Bohan (@cianmarbo)
+ * Date:    April 2022
+ *
+ * Summary of file:
+ *
+ *		file.h contains declarations for functions
+ *		required for file handling.
+ */
+
 #ifndef FILE_H
 #define FILE_H
 

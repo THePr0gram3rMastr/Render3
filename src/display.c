@@ -1,3 +1,15 @@
+/*
+ * File:    display.c
+ *
+ * Author:  Cian Martin Bohan (@cianmarbo)
+ * Date:    April 2022
+ *
+ * Summary of file:
+ *
+ *		display.c contains definitions for functions declared
+ * 		in display.h and file.h.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 
