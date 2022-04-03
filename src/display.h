@@ -25,7 +25,7 @@
 //Colour byte layout is ARGB, 8 bits per pixel channel, 32 bits in total
 #define COLOUR_BLACK 0xff000000
 #define COLOUR_WHITE 0xffffffff
-#define COLOUR_RED	 0xffff0000
+#define COLOUR_RED   0xffff0000
 #define COLOUR_GREEN 0xff00ff00
 #define COLOUR_BLUE  0xff0000ff
 #define COLOUR_GREY  0xff333333
