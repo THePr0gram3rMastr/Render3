@@ -23,12 +23,13 @@
 #define WINDOW_HEIGHT 600
 
 //Colour byte layout is ARGB, 8 bits per pixel channel, 32 bits in total
-#define COLOUR_BLACK 0xff000000
-#define COLOUR_WHITE 0xffffffff
-#define COLOUR_RED   0xffff0000
-#define COLOUR_GREEN 0xff00ff00
-#define COLOUR_BLUE  0xff0000ff
-#define COLOUR_GREY  0xff333333
+#define COLOUR_BLACK  0xff000000
+#define COLOUR_WHITE  0xffffffff
+#define COLOUR_RED    0xffff0000
+#define COLOUR_GREEN  0xff00ff00
+#define COLOUR_BLUE   0xff0000ff
+#define COLOUR_GREY   0xff333333
+#define COLOUR_YELLOW 0xffffff00
 
 #define INTERPOLATE  -1
 
@@ -45,7 +46,9 @@ SDL_Renderer* renderer;
 
 void clear_screen(uint32_t colour);
 
+void draw_pixel(uint32_t x_pos, uint32_t y_pos, uint32_t colour);
 void draw_rect(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint32_t colour);
+void draw_rect_unfill(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint32_t colour);
 void draw_right_triangle(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint32_t colour);
 void draw_grid(void);
 

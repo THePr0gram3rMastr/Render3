@@ -54,8 +54,6 @@ void dump_raw_buffer_content(size_t buffer_size) {
 	fclose(file);
 }
 
-//initialize SDL, window
-
 void render_frame_buffer(void) {
 	
 	SDL_UpdateTexture(texture, NULL, frame_buffer, (WINDOW_WIDTH * sizeof(uint32_t)));
@@ -67,6 +65,8 @@ void render_frame_buffer(void) {
 		NULL
 	);
 }
+
+//initialize SDL, window
 
 bool init_window(void) {
 	
@@ -139,59 +139,25 @@ void update(void) {
 }
 
 void render(void) {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
 	
-	render_frame_buffer();
+	SDL_RenderClear(renderer);
 	
 	clear_screen(COLOUR_BLACK);
 	draw_grid();
 	draw_right_triangle(80, 40, 200, 200, INTERPOLATE);
-	draw_rect(300, 300, 200, 200, COLOUR_RED);
+	//draw_rect(300, 300, 200, 200, COLOUR_RED);
+	draw_rect_unfill(300, 250, 200, 100, COLOUR_WHITE);
+	draw_pixel(700, 500, COLOUR_YELLOW);
+	
+	render_frame_buffer();
 	
 	SDL_RenderPresent(renderer);
 }
 
-//draws right angled triangles
+//draws a pixel
 
-void draw_right_triangle(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint32_t colour) {
-	
-	int tri_width = 0;
-	
-	if((x_pos < WINDOW_WIDTH) && (y_pos < WINDOW_HEIGHT)) {
-			for(int y = y_pos; y < (y_pos + height); y++) {
-				for(int x = x_pos; x < (x_pos + tri_width); x++) {
-					if(colour == INTERPOLATE) {
-					
-						float r = (float)x / (float) (x_pos + tri_width);
-						float g = (float)y / (float) (y_pos + height);
-						float b = 0.5;
-					
-						float a = 0xff;
-						float ir = (float)255.99f * r;
-						float ig = (float)255.99f * g;
-						float ib = (float)255.99f * b;
-					
-						uint32_t colour = (uint32_t)a;
-						colour <<= 8;
-						colour += (uint32_t)ir;
-						colour <<= 8;
-						colour += (uint32_t)ig;
-						colour <<= 8;
-						colour += (uint32_t)ib;
-					
-						frame_buffer[(WINDOW_WIDTH * y) + x] = colour;
-					} else {
-						frame_buffer[(WINDOW_WIDTH * y) + x] = colour;
-					}
-				
-			}
-			
-			if(tri_width < width) {
-				tri_width++;
-			}
-		}
-	}
+void draw_pixel(uint32_t x_pos, uint32_t y_pos, uint32_t colour) {
+	frame_buffer[(WINDOW_WIDTH * y_pos) + x_pos] = colour;
 }
 
 //draws a rectangle
@@ -229,6 +195,66 @@ void draw_rect(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, 
 		}
 	} else {
 		fprintf(stderr, "The x and y positions of ");
+	}
+}
+
+//draws unfilled rectangle
+
+void draw_rect_unfill(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint32_t colour) {
+	
+	if((x_pos < WINDOW_WIDTH) && (y_pos < WINDOW_HEIGHT)) {
+		for(int y = y_pos; y < (y_pos + height); y++) {
+			for(int x = x_pos; x < (x_pos + width); x++) {
+				if((y == y_pos) || (y == ((y_pos + height) - 1))) {
+					frame_buffer[(WINDOW_WIDTH * y) + x] = colour;
+				} else {
+					frame_buffer[(WINDOW_WIDTH * y) + x_pos] = colour;
+					frame_buffer[(WINDOW_WIDTH * y) + ((x_pos + width) - 1)] = colour;
+				}
+			}
+		}
+	}
+}
+
+//draws right angled triangles
+
+void draw_right_triangle(uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint32_t colour) {
+	
+	int tri_width = 0;
+	
+	if((x_pos < WINDOW_WIDTH) && (y_pos < WINDOW_HEIGHT)) {
+		for(int y = y_pos; y < (y_pos + height); y++) {
+			for(int x = x_pos; x < (x_pos + tri_width); x++) {
+				if(colour == INTERPOLATE) {
+					
+					float r = (float)x / (float) (x_pos + tri_width);
+					float g = (float)y / (float) (y_pos + height);
+					float b = 0.5;
+					
+					float a = 0xff;
+					float ir = (float)255.99f * r;
+					float ig = (float)255.99f * g;
+					float ib = (float)255.99f * b;
+					
+					uint32_t colour = (uint32_t)a;
+					colour <<= 8;
+					colour += (uint32_t)ir;
+					colour <<= 8;
+					colour += (uint32_t)ig;
+					colour <<= 8;
+					colour += (uint32_t)ib;
+					
+					frame_buffer[(WINDOW_WIDTH * y) + x] = colour;
+				} else {
+					frame_buffer[(WINDOW_WIDTH * y) + x] = colour;
+				}
+				
+			}
+			
+			if(tri_width < width) {
+				tri_width++;
+			}
+		}
 	}
 }
 
